@@ -29,7 +29,7 @@ var Browser = function() {
 
 util.inherits(Browser,EventEmitter);
 
-function crawlPage (page,url) {
+function crawlPage (browser,page,url) {
     if(typeof url != "string") throw "url needs to be a string";
     if(url.match(/^https*:\/\//) === null) throw "second argument needs to be a url";
     
@@ -44,8 +44,11 @@ function crawlPage (page,url) {
                 
             }), function (result) {
                 //Do something with the result of the payload
+                console.log("log: data recieved from PhantomJS")
                 console.log("result")
                 page.close();
+                browser.emit("pageClosed")
+                console.log("log: Page Closed")
             }
             
         });
@@ -56,8 +59,13 @@ var browser = new Browser();
 
 browser.on("readyToCrawl", function () {
     browser.pageCreator.createPage(function(page) {
-        crawlPage(page,"https://pisaca-jelick.codio.io/Provinces/Gazetteer.htm");
+        crawlPage(browser,page,"https://pisaca-jelick.codio.io/Provinces/Gazetteer.htm");
     });
 });
 
-console.log("Log: Event Handler Attached")
+browser.on("pageClosed", function () {
+    browser.pageCreator.exit();
+    console.log("log: PhantomJS closed");
+});
+
+console.log("Log: Event Handler Attached");
