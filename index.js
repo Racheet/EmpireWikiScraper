@@ -29,31 +29,9 @@ var Browser = function() {
 
 util.inherits(Browser,EventEmitter);
 
-var browser = new Browser();
-
-browser.on("readyToCrawl", function() {
-    browser.pageCreator.createPage(function(page) {
-        page.open("https://pisaca-jelick.codio.io/Provinces/Gazetteer.htm", function(status){
-            console.log("opened page: Gazeteer?", status);
-            page.includeJs("http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js", function(result) {
-                 page.evaluate(function(){
-                    $("#testdiv").html("Jquery Present");
-                    return document.getElementById("testdiv").innerHTML;
-
-                }, function(result) {
-                    console.log("Page h1:", result);
-                    browser.pageCreator.exit();
-                });   
-            });
-        });
-    });   
-});
-    
-console.log("Log: Event Handler Attached")
-
 function crawlPage (page,url) {
     if(typeof url != "string") throw "url needs to be a string";
-    if(url.substring(0,5) !== "http") throw "second argument needs to be a url";
+    if(url.match(/^https*:\/\//) === null) throw "second argument needs to be a url";
     
     page.open(url, function(status) {
         if(status !== "success") throw status;
@@ -65,6 +43,7 @@ function crawlPage (page,url) {
                 return $("title").html();          
                 
             }), function (result) {
+                //Do something with the result of the payload
                 console.log("result")
                 page.close();
             }
@@ -72,3 +51,13 @@ function crawlPage (page,url) {
         });
     })
 }
+
+var browser = new Browser();
+
+browser.on("readyToCrawl", function () {
+    browser.pageCreator.createPage(function(page) {
+        crawlPage(page,"https://pisaca-jelick.codio.io/Provinces/Gazetteer.htm");
+    });
+});
+
+console.log("Log: Event Handler Attached")
