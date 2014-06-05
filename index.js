@@ -10,6 +10,7 @@ var output = fs.createWriteStream("output/data.json", {
 
 var data = {};
 var Browser = function() {
+    "use strict";
     var self = this;
     EventEmitter.call(this);
     
@@ -30,30 +31,33 @@ var Browser = function() {
 util.inherits(Browser,EventEmitter);
 
 function crawlPage (browser,page,url) {
-    if(typeof url != "string") throw "url needs to be a string";
-    if(url.match(/^https*:\/\//) === null) throw "second argument needs to be a url";
+    "use strict";
+    if(typeof url != "string") {throw "url needs to be a string"; }
+    if(url.match(/^https*:\/\//) === null) {throw "second argument needs to be a url"; }
     
     page.open(url, function(status) {
         if(status !== "success") throw status;
         console.log("Opened Page:",url);
         
         page.includeJs("http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js", function (result) {
-            page.evaluate(function(){
-                //payload goes here
-                return $("title").html();          
+            
+            page.evaluate(
+               function(){
+                    //payload goes here
+                    return "payload";
                 
-            }), function (result) {
-                //Do something with the result of the payload
-                console.log("log: data recieved from PhantomJS")
-                console.log("result")
-                page.close();
-                browser.emit("pageClosed")
-                console.log("log: Page Closed")
-            }
+            }, function (result) {
+                    //Do something with the result of the payload
+                    console.log("log: data recieved from PhantomJS")
+                    console.log(result)
+                    page.close();
+                    browser.emit("pageClosed")
+                    console.log("log: Page Closed")
+            });
             
         });
     })
-}
+};
 
 var browser = new Browser();
 
