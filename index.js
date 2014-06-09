@@ -9,10 +9,10 @@ var output = fs.createWriteStream("output/data.json", {
 
 var data = {};
 
-function crawlPage (browser,page,url) {
+function crawlPage (browser,page,url,payload) {
     "use strict";
-    if(typeof url != "string") {throw "url needs to be a string"; }
-    if(url.match(/^https*:\/\//) === null) {throw "second argument needs to be a url"; }
+    if(typeof url != "string") {throw new Error("url needs to be a string"); }
+    if(url.match(/^https*:\/\//) === null) {throw new Error("second argument needs to be a url"); }
     
     page.open(url, function(status) {
         if(status !== "success") throw status;
@@ -22,8 +22,9 @@ function crawlPage (browser,page,url) {
             
             page.evaluate(
                function(){
-                    //payload goes here
-                    return "payload";
+                   if (typeof payload === "function")  return payload();
+                   throw new Error("No Function Passed into Page Crawler");
+                   
                 
             }, function (result) {
                     //Do something with the result of the payload
@@ -42,7 +43,7 @@ var browser = new Browser();
 
 browser.on("readyToCrawl", function () {
     browser.pageCreator.createPage(function(page) {
-        crawlPage(browser,page,"https://pisaca-jelick.codio.io/Provinces/Gazetteer.htm");
+        crawlPage(browser,page,"https://pisaca-jelick.codio.io/Provinces/Gazetteer.htm",function() {return "Page Crawled"});
     });
 });
 
