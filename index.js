@@ -7,9 +7,10 @@ var output = fs.createWriteStream("output/data.json", {
     "encoding": "utf8"
 });
 
-var data = {};
+var data = {},
+    pagesToCrawl = [];
 
-function crawlPage (browser,page,url) {
+function crawlPage (browser,page,url,payload) {
     "use strict";
     if(typeof url != "string") {throw "url needs to be a string"; }
     if(url.match(/^https*:\/\//) === null) {throw "second argument needs to be a url"; }
@@ -21,11 +22,8 @@ function crawlPage (browser,page,url) {
         page.includeJs("http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js", function (result) {
             
             page.evaluate(
-               function(){
-                    //payload goes here
-                    return "payload";
-                
-            }, function (result) {
+                payload,
+                function (result) {
                     //Do something with the result of the payload
                     console.log("log: data recieved from PhantomJS")
                     console.log(result)
@@ -42,7 +40,15 @@ var browser = new Browser();
 
 browser.on("readyToCrawl", function () {
     browser.pageCreator.createPage(function(page) {
-        crawlPage(browser,page,"https://pisaca-jelick.codio.io/Provinces/Gazetteer.htm");
+        crawlPage(browser,page,"https://pisaca-jelick.codio.io/Provinces/Gazetteer.htm",function() {
+             var $provinces = $("#article .span4 ul li a") // select all the province nodes
+                 $provinces = $provinces.map(function() {return this.href;}) // load just their hrefs
+                 
+             return $provinces.get(); // convert to a basic array from a jquery array
+            
+            
+            
+        });
     });
 });
 
