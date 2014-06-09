@@ -23,8 +23,6 @@ var Browser = function() {
         console.log("Log: Event Fired");
     });   
     
-    this.emit("init");
-    
     return this;
 };
 
