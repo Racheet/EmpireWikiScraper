@@ -1,7 +1,6 @@
-var phantom = require("phantom"),
-    fs = require("fs"),
-    EventEmitter = require("events").EventEmitter,
-    util = require("util");
+var fs = require("fs"),
+    Browser = require("libs/browser.js");
+
 
 var output = fs.createWriteStream("output/data.json", {
     "flags": "w",
@@ -9,24 +8,6 @@ var output = fs.createWriteStream("output/data.json", {
 });
 
 var data = {};
-var Browser = function() {
-    "use strict";
-    var self = this;
-    EventEmitter.call(this);
-    
-    this.createPage = function () {};
-    
-    phantom.create(function (instance) {
-        self.pageCreator = instance;
-        self.createPage = instance.createPage;
-        self.emit("readyToCrawl");
-        console.log("Log: Event Fired");
-    });   
-    
-    return this;
-};
-
-util.inherits(Browser,EventEmitter);
 
 function crawlPage (browser,page,url) {
     "use strict";
