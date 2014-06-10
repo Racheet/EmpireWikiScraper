@@ -37,30 +37,36 @@ browser.on("readyToCrawl", function crawlHostPage () {
     });
 });
 
-browser.on("pageClosed", function () {
-    //browser.pageCreator.exit();
-    //console.log("log: PhantomJS closed");
-});
-
 console.log("Log: Event Handler Attached");
 
-browser.on("pagesToCrawlPopulated",function crawlProvincePage (){
-    var thisProvince = pagesToCrawl[0]
+function crawlProvincePage (thisProvince,callback){
+    thisProvince = thisProvince || pagesToCrawl[0];
     browser.pageCreator.createPage(function(page){
         
         crawlPage(browser,page,thisProvince,function() {
+            //Note to self, this function is injected into the page, and currently doesn't work
             var output = {};
-            output.name = $("title").html().split("-")[0];
-            output.history = $("#Recent_History:parent ~ p").html();
-            output.overview = $("#Overview:parent + p").html();
+            output.name = $("title").text().trim().split(" - ")[0];
+            output.history = $("#Recent_History").parent().nextUntil("h2,h3").text();
+            output.overview = $("#Overview").parent().nextUntil("h2,h3").text()
             
             return JSON.stringify(output);
         }, function (result) {
-            thisProvince = result;
+            thisProvince = JSON.parse(result);
+            console.log("Parsed:",thisProvince.name);
             page.close();
-            console.log(pagesToCrawl);
+            if (typeof callback === "function") { callback(null,thisProvince); }
         });
         
     });
-    
+};
+
+browser.on("pagesToCrawlPopulated", function() {
+    async.mapLimit(pagesToCrawl,5,crawlProvincePage,function(err,results){
+        if (err) throw err;
+        pagesToCrawl = results;
+        console.log("Completed Array:",pagesToCrawl);
+        browser.pageCreator.exit();
+        console.log("log: PhantomJS Closed");
+    });
 });
