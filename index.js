@@ -44,7 +44,6 @@ function crawlProvincePage (thisProvince,callback){
     browser.pageCreator.createPage(function(page){
         
         crawlPage(browser,page,thisProvince,function() {
-            //Note to self, this function is injected into the page, and currently doesn't work
             var output = {};
             output.name = $("title").text().trim().split(" - ")[0];
             output.history = $("#Recent_History").parent().nextUntil("h2,h3").text();
@@ -63,6 +62,7 @@ function crawlProvincePage (thisProvince,callback){
 
 browser.on("pagesToCrawlPopulated", function() {
     async.mapLimit(pagesToCrawl,5,crawlProvincePage,function(err,results){
+        console.log("Final Callback Called");
         if (err) throw err;
         pagesToCrawl = results;
         console.log("Completed Array:",pagesToCrawl);
