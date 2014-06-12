@@ -9,8 +9,9 @@ var output = fs.createWriteStream("output/data.json", {
     "encoding": "utf8"
 });
 
-var data = {},
+var data = [],
     pagesToCrawl = [];
+    
 
 var browser = new Browser();
 
@@ -60,12 +61,13 @@ function crawlProvincePage (thisProvince,callback){
 };
 
 browser.on("pagesToCrawlPopulated", function() {
-    async.mapLimit(pagesToCrawl,5,crawlProvincePage,function(err,results){
+    async.mapLimit(pagesToCrawl,1,crawlProvincePage,function(err,results){
         console.log("Final Callback Called");
         if (err) throw err;
-        pagesToCrawl = results;
-        console.log("Completed Array:",pagesToCrawl);
         browser.pageCreator.exit();
         console.log("log: PhantomJS Closed");
+        data = results;
+        console.log("log: Built Data Array");
+                    output.end(JSON.stringify(data),"utf8", function() {console.log("log: output file written")});
     });
 });
