@@ -23,4 +23,4 @@ var Browser = function() {
 
 util.inherits(Browser,EventEmitter);
 
-module.exports = Browser;
+module.exports = new Browser();
