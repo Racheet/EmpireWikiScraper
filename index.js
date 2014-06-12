@@ -41,7 +41,7 @@ console.log("Log: Event Handler Attached");
 
 function crawlProvincePage (thisProvince,callback){
     thisProvince = thisProvince || pagesToCrawl[0];
-    browser.pageCreator.createPage(function(page){
+    browser.pageCreator.createPage(function(page) {
         
         crawlPage(browser,page,thisProvince,function() {
             var output = {};
