@@ -45,7 +45,7 @@ function crawlProvincePage (thisProvince,callback){
             output.overview = $("#Overview").parent().nextUntil("h2,h3").text();
             output.features = $("#Major_Features").parent().nextUntil("h2").filter("h3").map(function() {
                 return {"name": $(this).text(), "description": $(this).nextUntil("h2,h3").text() } 
-            }) ;
+            }).get() ;
             
             
             
