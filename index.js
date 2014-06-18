@@ -54,6 +54,7 @@ function crawlProvincePage (thisProvince,callback){
                  region.keywords = region.description.split("Keywords:")[1];
                  $.trim(region.keywords);
                  region.keywords = region.keywords.split(" ");
+                 region.keywords = region.keywords.filter(function(keyword) {return keyword !== "";})
                  region.description = region.description.split("Keywords:")[0];
                  $.trim(region.description);
              }
