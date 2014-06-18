@@ -1,6 +1,7 @@
 var fs = require("fs"),
     browser = require("libs/browser"),
     crawlPage = require("libs/crawlPage"),
+    crawlProvincePage = require("libs/crawlProvincePage"),
     async = require("async");
 
 
@@ -10,69 +11,31 @@ var output = fs.createWriteStream("output/data.json", {
 });
 
 var data = [],
-    pagesToCrawl = [];
+    pagesToCrawl = [],
+    concurrentWorkers = 1,
+    gazetteerUrl = "https://pisaca-jelick.codio.io/Provinces/Gazetteer.htm";
     
-browser.on("readyToCrawl", function crawlHostPage () {
-        
-       crawlPage("https://pisaca-jelick.codio.io/Provinces/Gazetteer.htm",function() {
-             var $provinces = $("#article .span4 ul li a") // select all the province nodes
-                 $provinces = $provinces.map(function() {return this.href;}) // load just their hrefs
-                 
-             return $provinces.get(); // convert to a basic array from a jquery array
-            
-            
-       }, function (result) {
-            pagesToCrawl = result;
-            browser.emit("pagesToCrawlPopulated");
-            console.log("log: Page Closed");
-            console.log(pagesToCrawl);
-            
-        });
+browser.on("readyToCrawl", function(){ 
+    
+           crawlPage(gazetteerUrl, 
+             function() {
+               var $provinces = $("#article .span4 ul li a") // select all the province nodes
+               $provinces = $provinces.map(function() {
+                   return this.href;
+               }) // load just their hrefs
+               return $provinces.get(); // convert to a basic array from a jquery array
+           },function(result) {
+               pagesToCrawl = result;
+               browser.emit("pagesToCrawlPopulated");
+               console.log("log: Page Closed");
+               console.log(pagesToCrawl);
+           });
+    
 });
 
-console.log("Log: Event Handler Attached");
-
-function crawlProvincePage (thisProvince,callback){
-    thisProvince = thisProvince || pagesToCrawl[0];
-        
-        crawlPage(thisProvince,function() {
-            var output = {},
-                majorFeatures = [];
-                
-            
-            output.name = $("title").text().trim().split(" - ")[0];
-            output.history = $("#Recent_History").parent().nextUntil("h2,h3").text();
-            output.overview = $("#Overview").parent().nextUntil("h2,h3").text();
-            output.features = $("#Major_Features").parent().nextUntil("h2").filter("h3").map(function() {
-                return {"name": $(this).text().trim(), "description": $(this).nextUntil("h2,h3").text().trim() } 
-            }).get() ;
-            output.regions = $("#Regions").parent().nextUntil("h2").filter("h3").map(function() {
-                return {"name": $(this).text().trim(), "description": $(this).nextUntil("h2,h3").text().trim() } 
-            }).get() ;
-            output.regions.forEach(function(region) {
-             if(typeof region.description == "string" && region.description.indexOf("Keywords") !== -1) {
-                 region.keywords = region.description.split("Keywords:")[1];
-                 $.trim(region.keywords);
-                 region.keywords = region.keywords.split(" ");
-                 region.keywords = region.keywords.filter(function(keyword) {return keyword !== "";})
-                 region.description = region.description.split("Keywords:")[0];
-                 $.trim(region.description);
-             }
-            });
-            
-            
-            
-            return JSON.stringify(output);
-        }, function (result) {
-            thisProvince = JSON.parse(result);
-            console.log("Parsed:",thisProvince.name);
-            if (typeof callback === "function") { callback(null,thisProvince); }
-        });
-        
-};
 
 browser.on("pagesToCrawlPopulated", function() {
-    async.mapLimit(pagesToCrawl,1,crawlProvincePage,function(err,results){
+    async.mapLimit(pagesToCrawl,concurrentWorkers,crawlProvincePage,function(err,results){
         console.log("Final Callback Called");
         if (err) throw err;
         browser.pageCreator.exit();
