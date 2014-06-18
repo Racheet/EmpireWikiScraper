@@ -46,6 +46,18 @@ function crawlProvincePage (thisProvince,callback){
             output.features = $("#Major_Features").parent().nextUntil("h2").filter("h3").map(function() {
                 return {"name": $(this).text().trim(), "description": $(this).nextUntil("h2,h3").text().trim() } 
             }).get() ;
+            output.regions = $("#Regions").parent().nextUntil("h2").filter("h3").map(function() {
+                return {"name": $(this).text().trim(), "description": $(this).nextUntil("h2,h3").text().trim() } 
+            }).get() ;
+            output.regions.forEach(function(region) {
+             if(typeof region.description == "string" && region.description.indexOf("Keywords") !== -1) {
+                 region.keywords = region.description.split("Keywords:")[1];
+                 $.trim(region.keywords);
+                 region.keywords = region.keywords.split(" ");
+                 region.description = region.description.split("Keywords:")[0];
+                 $.trim(region.description);
+             }
+            });
             
             
             
@@ -65,7 +77,8 @@ browser.on("pagesToCrawlPopulated", function() {
         browser.pageCreator.exit();
         console.log("log: PhantomJS Closed");
         data = results;
+        data = JSON.stringify(data);
         console.log("log: Built Data Array");
-                    output.end(JSON.stringify(data),"utf8", function() {console.log("log: output file written")});
+                    output.end(data,"utf8", function() {console.log("log: output file written")});
     });
 });
