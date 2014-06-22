@@ -13,7 +13,7 @@ var output = fs.createWriteStream("output/data.json", {
 var data = [],
     pagesToCrawl = [],
     concurrentWorkers = 1,
-    gazetteerUrl = "https://pisaca-jelick.codio.io/Provinces/Gazetteer.htm";
+    gazetteerUrl = "http://www.profounddecisions.co.uk/empire-wiki/Gazetteer";
     
 browser.on("readyToCrawl", function(){ 
     
