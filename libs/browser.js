@@ -9,6 +9,12 @@ var Browser = function() {
     var self = this;
     EventEmitter.call(this);
     
+    //Stubs
+    self.exit = null;
+    self.pageCreator = null;
+    self.createPage = null;
+   
+    //Initialise PhantomJs
     phantom.create(function (instance) {
         self.pageCreator = instance;
         self.exit = instance.exit;
@@ -17,7 +23,7 @@ var Browser = function() {
         console.log('Log: PhantomJS Process Initialised');
     });   
     
-    
+    //Api Function For Crawling a Page;
     self.crawlPage = function crawlPage(url, payload, localDataBind) {
          if(typeof url != "string") {
              throw new Error("url needs to be a string");
@@ -25,8 +31,8 @@ var Browser = function() {
          if(url.match(/^https*:\/\//) === null) {
              throw new Error("third argument needs to be a url");
          }
-         if (typeof this !== 'undefined' && typeof this.pageCreator !== 'undefined') {
-             this.pageCreator.createPage(function(page) {
+         if (self.pageCreator) {
+             self.pageCreator.createPage(function(page) {
                  page.open(url, function(status) {
                      if(status !== "success") throw new Error(status);
                      console.log("Opened Page:", url);
