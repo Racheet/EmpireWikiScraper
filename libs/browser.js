@@ -11,6 +11,7 @@ var Browser = function() {
     
     phantom.create(function (instance) {
         self.pageCreator = instance;
+        self.exit = instance.exit;
         self.createPage = instance.createPage;
         self.emit("readyToCrawl");
         console.log('Log: PhantomJS Process Initialised');
