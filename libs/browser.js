@@ -9,8 +9,6 @@ var Browser = function() {
     var self = this;
     EventEmitter.call(this);
     
-    this.createPage = function () {};
-    
     phantom.create(function (instance) {
         self.pageCreator = instance;
         self.createPage = instance.createPage;
@@ -19,14 +17,14 @@ var Browser = function() {
     });   
     
     
-    function crawlPage(url, payload, localDataBind) {
+    self.crawlPage = function crawlPage(url, payload, localDataBind) {
          if(typeof url != "string") {
              throw new Error("url needs to be a string");
          }
          if(url.match(/^https*:\/\//) === null) {
              throw new Error("third argument needs to be a url");
          }
-         if (this.pageCreator) {
+         if (typeof this !== 'undefined' && typeof this.pageCreator !== 'undefined') {
              this.pageCreator.createPage(function(page) {
                  page.open(url, function(status) {
                      if(status !== "success") throw new Error(status);
@@ -38,15 +36,13 @@ var Browser = function() {
                  });
              });
          } else {
-             setTimeout(function(){crawlPage(url,payload,localDataBind);},1000); // if phantomJS not loaded yet sleep 1 second then try again. 
+             setTimeout(function(){self.crawlPage(url,payload,localDataBind);},1000); // if phantomJS not loaded yet sleep 1 second then try again. 
              return; // kill this stack frame;
          }
         
-     }  
+     };  
     
-    this.crawlPage = crawlPage.bind(this);
-    
-    return this;
+    return self;
 };
 
 util.inherits(Browser,EventEmitter);
