@@ -1,6 +1,5 @@
 var fs = require("fs"),
     browser = require("libs/browser"),
-    crawlPage = require("libs/crawlPage"),
     crawlProvincePage = require("libs/crawlProvincePage"),
     async = require("async");
 
@@ -17,12 +16,12 @@ var data = [],
     
 browser.on("readyToCrawl", function(){ 
     
-           crawlPage(gazetteerUrl, 
+           browser.crawlPage(gazetteerUrl, 
              function() {
-               var $provinces = $("#article .span4 ul li a") // select all the province nodes
+               var $provinces = $("#article .span4 ul li a"); // select all the province nodes
                $provinces = $provinces.map(function() {
                    return this.href;
-               }) // load just their hrefs
+               }); // load just their hrefs
                return $provinces.get(); // convert to a basic array from a jquery array
            },function(result) {
                pagesToCrawl = result;
@@ -43,6 +42,6 @@ browser.on("pagesToCrawlPopulated", function() {
         data = results;
         data = JSON.stringify(data);
         console.log("log: Built Data Array");
-                    output.end(data,"utf8", function() {console.log("log: output file written")});
+                    output.end(data,"utf8", function() {console.log("log: output file written");});
     });
 });
