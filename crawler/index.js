@@ -1,8 +1,7 @@
 var fs = require("fs"),
-    browser = require("libs/browser"),
-    crawlProvincePage = require("libs/crawlProvincePage"),
-    async = require("async"),
-	serialiseObject = require("js-object-pretty-print").pretty;
+    browser = require(__dirname + "/libs/browser"),
+    crawlProvincePage = require(__dirname + "/libs/crawlProvincePage"),
+    async = require("async");
 
 
 var concurrentWorkers = 1,
@@ -28,9 +27,7 @@ function crawlGazeteerHomepage (done) {
 }
 
 function serialiseObjectToJson (data) {
-    var defaultSpacing = 4,
-        outputFormat = "JSON"; //can be JSON, PRINT or HTML
-    return JSON.stringify(serialiseObject(data,defaultSpacing,outputFormat));
+    return JSON.stringify(data);
 }
 
 function crawlAllProvinces (pagesToCrawl,done) {
@@ -48,7 +45,7 @@ function crawlAllProvinces (pagesToCrawl,done) {
 function writeOutProvincesJson (err, provinces) {
     if (err) return console.error(err);
     
-    var output = fs.createWriteStream("output/data.json", {
+    var output = fs.createWriteStream(__dirname + "/output/data.json", {
         "flags": "w",
         "encoding": "utf8"
     });
