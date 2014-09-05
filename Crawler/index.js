@@ -1,12 +1,13 @@
 var fs = require("fs"),
     browser = require("libs/browser"),
     crawlProvincePage = require("libs/crawlProvincePage"),
-    async = require("async");
+    async = require("async"),
+	serialiseObject = require("js-object-pretty-print").pretty;
 
 
 var concurrentWorkers = 1,
     gazetteerUrl = "http://www.profounddecisions.co.uk/empire-wiki/Gazetteer";
-    
+
 
 function crawlGazeteerHomepage (done) {
     browser.crawlPage(gazetteerUrl, function() {
@@ -26,6 +27,13 @@ function crawlGazeteerHomepage (done) {
     
 }
 
+function serialiseObjectToJson (data) {
+    var defaultSpacing = 4,
+        outputFormat = "JSON"; //can be JSON, PRINT or HTML
+        
+    return serialiseObject(data,defaultSpacing,outputFormat);
+}
+
 function crawlAllProvinces (pagesToCrawl,done) {
    async.mapLimit(pagesToCrawl, concurrentWorkers, crawlProvincePage, function(err, results) {
        if(err) throw err;
@@ -33,7 +41,7 @@ function crawlAllProvinces (pagesToCrawl,done) {
        browser.exit();
        console.log("log: PhantomJS Closed");
        data = results;
-       data = JSON.stringify(data);
+       data = serialiseObjectToJson(data);
        done(null,data);
    });
 }
