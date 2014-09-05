@@ -30,8 +30,7 @@ function crawlGazeteerHomepage (done) {
 function serialiseObjectToJson (data) {
     var defaultSpacing = 4,
         outputFormat = "JSON"; //can be JSON, PRINT or HTML
-        
-    return serialiseObject(data,defaultSpacing,outputFormat);
+    return JSON.stringify(serialiseObject(data,defaultSpacing,outputFormat));
 }
 
 function crawlAllProvinces (pagesToCrawl,done) {
