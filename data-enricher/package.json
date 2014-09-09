@@ -13,6 +13,7 @@
   "license": "MIT",
   "dependencies": {
       "prompt" : "0.2.x",
-      "async" : "0.9.x"
+      "async" : "0.9.x",
+      "q" : "1.x.x"
 	}
 }

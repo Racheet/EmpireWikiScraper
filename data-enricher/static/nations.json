@@ -1,0 +1,43 @@
+[
+    {
+        "name": "Highguard",
+        "territories": ["Reikos", "Bastion", "Necropolis", "Casinea"]
+    },
+    {
+        "name": "The Marches",
+        "territories": ["Upwold", "Mitwold", "Mournwold", "Bregasland"]
+    },
+    {
+        "name": "Dawn",
+        "territories": ["Astolat", "Weirwater", "Semmerholm", "The Barrens"]
+    },
+    {
+        "name": "The League",
+        "territories": ["Holberg", "Temeschwar", "Sarvos", "Tassato"]
+    },
+    {
+        "name": "Varushka",
+        "territories": ["Karov", "Karsk", "Miekarova", "Volodmartz"]
+    },
+    {
+        "name": "The Brass Coast",
+        "territories": ["Madruga", "Kahraman", "Segura", "Feroz"]
+    },
+    {
+        "name": "Urizen",
+        "territories": ["Zenith", "Spiral", "Redoubt", "Morrow"]
+    },
+    {
+        "name": "Wintermark",
+        "territories": ["Hahnmark", "Sermersuaq", "Kallavesa", "Skarsind"]
+    },
+    {
+        "name": "Navarr",
+        "territories": ["Brocéliande", "Hercynia", "Miaren", "Liathaven", "Therunin"]
+    },
+    {
+        "name": "Imperial Orcs",
+        "territories": []
+    }
+]
+
