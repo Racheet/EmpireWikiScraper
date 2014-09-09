@@ -12,5 +12,5 @@ var nationsRegex = configs.nationsRegex;
 
 async.mapSeries(data, getTerritoryData, function (err, results) {
     if(err) throw new Error(err);
-    output(null, JSON.stringify(results),__dirname + "/output/data.json");
+    output(results,__dirname + "/output/data.json");
 });
