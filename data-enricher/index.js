@@ -2,7 +2,8 @@
 
 var prompt = require("prompt"),
     fs = require("fs"),
-    async = require("async");
+    async = require("async"),
+    Q = require("q");
 
 
 var inputPath = process.argv[2] || __dirname + "/input/data.json";
@@ -16,10 +17,14 @@ prompt.start();
 function getTerritoryData(territory, callback) {
     //setup
     function matchTerritoryToNation(territory) {
+        var deferred = Q.defer();
         territory.nation = findNationOf(territory.name);
+        deferred.resolve(territory);
+        return deferred.promise;
     }
 
-    function checkIfNationIsCorrect(callback) {
+    function confirmNationIsCorrect(territory) {
+        var deferred = Q.defer();
         var schema = {
             name: "nation",
             message: "Is " + territory.name + " in " + territory.nation + "?" + "(yes/no)",
@@ -32,33 +37,35 @@ function getTerritoryData(territory, callback) {
             if(err) return callback(err);
             if(result.nation.toLowerCase()
                 .match(/^[yY]$|^[yY]es$/)) {
-                callback(true);
+                deferred.resolve(territory);
             } else {
-                callback(false);
+                updateIncorrectNation(territory,deferred.resolve);
             }
+        });
+        
+        return deferred.promise;
+    }
+    
+    function updateIncorrectNation(territory,callback){
+        var schema = {
+            "name" : "nation",
+            "message" : "Which Nation is " + territory.name + " actually in?"
+        };
+        
+         
+        prompt.get(schema, function(err,result){
+           if (err) return callback(err);
+           territory.nation = result.nation;
+            
+           callback(territory);
+            
         });
     }
 
-    function manuallyUpdateNation(callback) {
-        
-        console.log("crumbs!");
-        callback();
-    }
 
     //logic
     console.log("This Territory is:", territory.name);
-    matchTerritoryToNation(territory);
-
-    checkIfNationIsCorrect(function (nationIsCorrect) {
-        if(nationIsCorrect) {
-            return callback(null, territory);
-        } else {
-            manuallyUpdateNation(function () {
-                return callback(null, territory);
-            });
-        }
-    });
-
+    matchTerritoryToNation(territory).then(confirmNationIsCorrect).nodeify(callback);
 }
 
 
