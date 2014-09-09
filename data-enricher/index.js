@@ -3,13 +3,13 @@
 var prompt = require("prompt"),
     fs = require("fs"),
     async = require("async"),
-    Q = require("q");
+    Q = require("q"),
+	configs = require("./libs/loadConfigs.js");
 
 
-var inputPath = process.argv[2] || __dirname + "/input/data.json";
-var data = JSON.parse(fs.readFileSync(inputPath)
-    .toString());
-var nations = JSON.parse(fs.readFileSync(__dirname + "/static/nations.json"));
+var data = configs.inputData;
+var nations = configs.nationsArray;
+var nationsRegex = configs.nationsRegex;
 
 prompt.start();
 
@@ -39,33 +39,43 @@ function getTerritoryData(territory, callback) {
                 .match(/^[yY]$|^[yY]es$/)) {
                 deferred.resolve(territory);
             } else {
-                updateIncorrectNation(territory,deferred.resolve);
+                updateIncorrectNation(territory, deferred.resolve);
             }
         });
-        
+
         return deferred.promise;
     }
-    
-    function updateIncorrectNation(territory,callback){
+
+    function updateIncorrectNation(territory, callback) {
         var schema = {
-            "name" : "nation",
-            "message" : "Which Nation is " + territory.name + " actually in?"
+            "name": "nation",
+            "message": "Which Nation is " + territory.name + " actually in?",
+            "validator": nationsRegex,
+            "warning": "Please Enter One of: Highguard, The League, The Brass Coast, Varushka, Navarr, Dawn, Wintermark, Urizen, The Marches or Imperial Orcs"
         };
-        
-         
-        prompt.get(schema, function(err,result){
-           if (err) return callback(err);
-           territory.nation = result.nation;
-            
-           callback(territory);
-            
+
+        function toTitleCase(str) {
+            return str.replace(/\b\w/g, function (txt) {
+                return txt.toUpperCase();
+            });
+        }
+
+
+        prompt.get(schema, function (err, result) {
+            if(err) return callback(err);
+            territory.nation = toTitleCase(result.nation);
+
+            callback(territory);
+
         });
     }
 
 
     //logic
     console.log("This Territory is:", territory.name);
-    matchTerritoryToNation(territory).then(confirmNationIsCorrect).nodeify(callback);
+    matchTerritoryToNation(territory)
+        .then(confirmNationIsCorrect)
+        .nodeify(callback);
 }
 
 
