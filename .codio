@@ -4,7 +4,8 @@
 // Run button configuration
   "commands": {
         "Node version": "node --version",
-        "Run" : "node index.js"
+        "Run Crawler" : "node ~/workspace/crawler/index.js",
+        "Run Data Enricher" : "node ~/workspace/data-enricher/index.js"
   },
 
 // Preview button configuration
