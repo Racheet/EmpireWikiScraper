@@ -1,11 +1,9 @@
-var prompt = require("prompt"),
-    Q = require("q"),
+var Q = require("q"),
+    askUser = require("./promptUserViaTerminal.js"),
     configs = require("./loadConfigs.js");
 
 var nations = configs.nationsArray;
 var nationsRegex = configs.nationsRegex;
-
-prompt.start();
 
 function getNationOfTerritory(territory) {
     //setup
@@ -27,7 +25,6 @@ function getNationOfTerritory(territory) {
     }
 
     function confirmNationIsCorrect(territory) {
-        var deferred = Q.defer();
         var schema = {
             name: "nation",
             message: "Is " + territory.name + " in " + territory.nation + "?" + "(yes/no)",
@@ -36,20 +33,21 @@ function getNationOfTerritory(territory) {
 
         };
 
-        prompt.get(schema, function (err, result) {
-            if(err) return callback(err);
+        function processResponse(result) {
+            var deferred = Q.defer();
             if(result.nation.toLowerCase()
                 .match(/^[yY]$|^[yY]es$/)) {
                 deferred.resolve(territory);
+                return deferred.promise;
             } else {
-                updateIncorrectNation(territory, deferred.resolve);
+                return updateIncorrectNation(territory);
             }
-        });
+        }
+        return askUser(schema).then(processResponse);
 
-        return deferred.promise;
     }
 
-    function updateIncorrectNation(territory, callback) {
+    function updateIncorrectNation(territory) {
         var schema = {
             "name": "nation",
             "message": "Which Nation is " + territory.name + " actually in?",
@@ -63,19 +61,19 @@ function getNationOfTerritory(territory) {
             });
         }
 
-
-        prompt.get(schema, function (err, result) {
-            if(err) return callback(err);
+        function processResponse(result) {
             territory.nation = toTitleCase(result.nation);
 
-            callback(territory);
+            return territory;
 
-        });
+        }
+        
+        return askUser(schema).then(processResponse);
     }
 
 
     //logic
-    return Q(territory).then(matchTerritoryToNation).then(confirmNationIsCorrect);
+    return matchTerritoryToNation(territory).then(confirmNationIsCorrect);
 }
 
 
