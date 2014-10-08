@@ -1,14 +1,6 @@
 var fs = require("fs"),
-    configs = require("loadConfigs.js"),
-    askUser = require("promptUserViaTerminal.js"),
+    askUser = require("./promptUserViaTerminal.js"),
     async = require("async");
-
-
-var data = configs.inputData,
-    inputArgument = process.argv[2] || 11, //default to Reikos, it has White Granite
-    province = data[inputArgument],
-    features = province.features,
-    regions = province.regions;
 
 
 function lookForWhiteGraniteIn(feature) {
@@ -65,17 +57,17 @@ function lookForIliumIn(feature) {
     return false;
 }
 
-function summariseProvince(province) {
-    province.whiteGranite = 0;
-    province.mithril = 0;
-    province.weirwood = 0;
-    province.ilium = false;
+function summariseTerritory(territory) {
+    territory.whiteGranite = 0;
+    territory.mithril = 0;
+    territory.weirwood = 0;
+    territory.ilium = false;
     
-    province.features.forEach(function(feature){
-        if (feature.whiteGranite) province.whiteGranite += parseInt(feature.whiteGranite,10);
-        if (feature.mithril) province.mithril += parseInt(feature.mithril,10);
-        if (feature.weirwood) province.weirwood += parseInt(feature.weirwood,10);
-        if (feature.ilium) province.ilium = true;
+    territory.features.forEach(function(feature){
+        if (feature.whiteGranite) territory.whiteGranite += parseInt(feature.whiteGranite,10);
+        if (feature.mithril) territory.mithril += parseInt(feature.mithril,10);
+        if (feature.weirwood) territory.weirwood += parseInt(feature.weirwood,10);
+        if (feature.ilium) territory.ilium = true;
     });
 }
 
@@ -100,12 +92,15 @@ function parseFeature(feature) {
 }
 
 
+function processTerritory(territory) {
+    territory.features.forEach(parseFeature);
+    territory.regions.forEach(parseFeature);
 
-features.forEach(parseFeature);
-regions.forEach(parseFeature);
+    summariseTerritory(territory);
+    if (territory.weirwood) console.log(territory.weirwood.toString(),"wains of weirwood found");
+    if (territory.mithril) console.log(territory.mithril.toString(),"wains of mithril found");
+    if (territory.whiteGranite) console.log(territory.whiteGranite.toString(),"wains of white granite found");
+    if (territory.ilium) console.log("Ilium Found");
+}
 
-summariseProvince(province);
-if (province.weirwood) console.log(province.weirwood.toString(),"wains of weirwood found");
-if (province.mithril) console.log(province.mithril.toString(),"wains of mithril found");
-if (province.whiteGranite) console.log(province.whiteGranite.toString(),"wains of white granite found");
-if (province.ilium) console.log("Ilium Found");
+module.exports = processTerritory;
