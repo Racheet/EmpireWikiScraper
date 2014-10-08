@@ -101,6 +101,8 @@ function processTerritory(territory) {
     if (territory.mithril) console.log(territory.mithril.toString(),"wains of mithril found");
     if (territory.whiteGranite) console.log(territory.whiteGranite.toString(),"wains of white granite found");
     if (territory.ilium) console.log("Ilium Found");
+    
+    return territory;
 }
 
 module.exports = processTerritory;
