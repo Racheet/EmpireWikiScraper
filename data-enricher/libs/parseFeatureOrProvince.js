@@ -6,11 +6,11 @@ var fs = require("fs"),
 function lookForWhiteGraniteIn(feature) {
     var foundGranite = false,
         graniteQuantity = null;
-    if (feature.description.match(/\d+.*wains of.* white granite/i)) {
+    if (feature.description.match(/\d+ (imperial )?wains of.* white granite/i)) {
         foundGranite = true;
     }
     if (foundGranite) {
-        graniteQuantity = feature.description.match(/(\d+).* wains of.*white granite/i)[1];
+        graniteQuantity = feature.description.match(/(\d+) (imperial )?wains of.*white granite/i)[1];
         return graniteQuantity;
     }
     return false;
@@ -20,11 +20,11 @@ function lookForWhiteGraniteIn(feature) {
 function lookForWeirwoodIn(feature) {
     var foundWeirwood = false,
         weirwoodQuantity = null;
-    if (feature.description.match(/\d+.*wains of/) && feature.description.match(/weirwood/i)) {
+    if (feature.description.match(/\d+ (imperial )?wains of/i) && feature.description.match(/weirwood/i)) {
         foundWeirwood = true;
     }
     if (foundWeirwood) {
-        weirwoodQuantity = feature.description.match(/(\d+).* wains of.*weirwood/i)[1];
+        weirwoodQuantity = feature.description.match(/(\d+) (imperial )?wains of.*weirwood/i)[1];
         return weirwoodQuantity;
     }
     return false;
@@ -34,11 +34,11 @@ function lookForWeirwoodIn(feature) {
 function lookForMithrilIn(feature) {
     var foundMithril = false,
         mithrilQuantity = null;
-    if (feature.description.match(/\d+.* wains of/) && feature.description.match(/mithril/i)) {
+    if (feature.description.match(/\d+ (imperial )?wains of/i) && feature.description.match(/mithril/i)) {
         foundMithril = true;
     }
     if (foundMithril) {
-        mithrilQuantity = feature.description.match(/(\d+).* wains of.*mithril/i)[1];
+        mithrilQuantity = feature.description.match(/(\d+) (imperial )?wains of.*mithril/i)[1];
         return mithrilQuantity;
     }
     return false;
@@ -48,7 +48,7 @@ function lookForMithrilIn(feature) {
 function lookForIliumIn(feature) {
     var foundilium = false,
         iliumQuantity = null;
-    if (feature.description.match(/rings? of/) && feature.description.match(/ilium/i)) {
+    if (feature.description.match(/rings? of/i) && feature.description.match(/ilium/i)) {
         foundilium = true;
     }
     if (foundilium) {
