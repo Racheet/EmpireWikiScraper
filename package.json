@@ -1,5 +1,5 @@
 {
-  "name": "empire-gazeteer-scanner",
+  "name": "empire-gazeteer-crawler",
   "version": "0.0.0",
   "description": "A web crawler for profound-decisions empire wiki",
   "main": "index.js",
@@ -14,6 +14,10 @@
   "dependencies": {
 	"phantom" : "0.6.x",
       "async" : "0.9.x",
-      "js-object-pretty-print" : "0.1.x"
+      "js-object-pretty-print" : "0.1.x",
+      "prompt" : "0.2.x",
+      "q" : "1.x.x",
+      "commander" : "2.x.x"
+      
 	}
 }

@@ -1,6 +1,8 @@
 var fs = require("fs");
 
-function writeOutProvincesJson(provinces,destination) {
+function writeOutProvincesJson(provinces,destination,callback) {
+    
+    
     
     var output = fs.createWriteStream(destination, {
         "flags": "w",
@@ -11,6 +13,7 @@ function writeOutProvincesJson(provinces,destination) {
 
     output.end(provinces, "utf8", function () {
         console.log("log: output file written");
+        if (callback) callback();
     });
 }
 

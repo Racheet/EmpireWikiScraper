@@ -20,7 +20,6 @@ var Browser = function() {
         self.exit = instance.exit;
         self.createPage = instance.createPage;
         self.emit("readyToCrawl");
-        console.log('Log: PhantomJS Process Initialised');
     });   
     
     //Api Function For Crawling a Page;

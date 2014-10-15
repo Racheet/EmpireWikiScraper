@@ -5,7 +5,8 @@ var fs = require("fs"),
 
 
 var concurrentWorkers = 1,
-    gazetteerUrl = "http://www.profounddecisions.co.uk/empire-wiki/Gazetteer";
+    gazetteerUrl = "http://www.profounddecisions.co.uk/empire-wiki/Gazetteer",
+    outputDirectory = __dirname + "/../output/";
 
 
 function crawlGazeteerHomepage (done) {
@@ -27,7 +28,8 @@ function crawlGazeteerHomepage (done) {
 }
 
 function serialiseObjectToJson (data) {
-    return JSON.stringify(data);
+    var defaultSpacing = 2;                   
+    return JSON.stringify(data,null,defaultSpacing);
 }
 
 function crawlAllProvinces (pagesToCrawl,done) {
@@ -45,15 +47,24 @@ function crawlAllProvinces (pagesToCrawl,done) {
 function writeOutProvincesJson (err, provinces) {
     if (err) return console.error(err);
     
-    var output = fs.createWriteStream(__dirname + "/output/data.json", {
+    if (!fs.existsSync(outputDirectory)) {
+        fs.mkdirSync(outputDirectory);
+    }
+    
+    var output = fs.createWriteStream(outputDirectory+"data.json", {
         "flags": "w",
         "encoding": "utf8"
     });
     
     output.end(provinces, "utf8", function() {
        console.log("log: output file written");
+       process.exit();
    });
+    
 }
 
-async.waterfall([crawlGazeteerHomepage,crawlAllProvinces],writeOutProvincesJson);
+function crawlSite() {
+    async.waterfall([crawlGazeteerHomepage,crawlAllProvinces],writeOutProvincesJson);
+}
 
+module.exports = crawlSite;
