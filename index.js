@@ -13,4 +13,6 @@ if (program.crawl) {
     crawler();
 } else if (program.enrich) {
     dataEnricher();
+} else {
+   console.log("please use command line flags --crawl or --enrich");
 }
